@@ -1,0 +1,5 @@
+# ---- environment ---- 
+.env
+.venv
+
+internal_data_operations_platform.egg-info/
