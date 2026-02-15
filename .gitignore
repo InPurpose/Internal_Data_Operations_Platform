@@ -3,3 +3,9 @@
 .venv
 
 internal_data_operations_platform.egg-info/
+
+app/db/__pycache__/
+app/models/__pycache__/
+**/__pycache__/
+
+test/test_create.py

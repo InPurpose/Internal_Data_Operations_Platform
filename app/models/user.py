@@ -10,7 +10,10 @@ class User(Base):
     country = Column(String, index=True)
     device_type = Column(String)
     register_time = Column(DateTime, index=True)
-    
+
     orders = relationship("Order", back_populates="user")
+
+
+# Indexed: id, email, country, register_time
 
  
