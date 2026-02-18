@@ -16,6 +16,19 @@ class Order(Base):
     user = relationship("User", back_populates="orders")
     product = relationship("Product")
 
+    # new added line
+    # snapshot_price = Column(Numeric(10, 2), nullable=True)
+    # total_amount = Column(Numeric(10, 2), nullable=True)
+    # status = Column(String(20), nullable=True)
+
+    snapshot_price = Column(Numeric(10, 2), nullable=False)
+    total_amount = Column(Numeric(10, 2), nullable=False)
+    # status = Column(String(20), nullable=False)
+
+    paid_at = Column(DateTime, nullable=True)
+    updated_at = Column(DateTime, nullable=True)
+
+
 
 
 
