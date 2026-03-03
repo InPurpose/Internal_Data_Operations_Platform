@@ -1,9 +1,13 @@
-from sqlalchemy import Column, Integer, String, Numeric, DateTime,ForeignKey
+from sqlalchemy import Column, Integer, String, Numeric, DateTime,ForeignKey, Index
 from app.db.base import Base
 from sqlalchemy.orm import relationship
 
 class Order(Base):
     __tablename__ = "orders"
+
+    __table_args__ = (
+        Index("idx_orders_status_time", "status", "order_time"),
+    )
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -23,7 +27,6 @@ class Order(Base):
 
     snapshot_price = Column(Numeric(10, 2), nullable=False)
     total_amount = Column(Numeric(10, 2), nullable=False)
-    # status = Column(String(20), nullable=False)
 
     paid_at = Column(DateTime, nullable=True)
     updated_at = Column(DateTime, nullable=True)

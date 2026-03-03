@@ -6,7 +6,7 @@ class Product(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(255),unique=True,nullable=False)
-    category = Column(String,nullable=False, index=True)
+    category = Column(String,nullable=True, index=True)
     price=Column(Numeric(10, 2),unique=False,nullable=False)
     created_at= Column(DateTime, index=True)
 

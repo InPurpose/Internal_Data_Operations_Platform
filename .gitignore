@@ -9,3 +9,9 @@ app/models/__pycache__/
 **/__pycache__/
 
 test/test_create.py
+RemindMySelf.md
+output.txt
+
+
+# logs
+logs/*.log

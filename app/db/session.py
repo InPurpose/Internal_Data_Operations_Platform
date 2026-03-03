@@ -2,10 +2,10 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 
-load_dotenv()
+# load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # print(DATABASE_URL == "postgresql://idop_user:123456@localhost:5432/idop")
