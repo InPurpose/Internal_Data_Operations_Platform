@@ -2,7 +2,7 @@
 .env
 .venv
 
-internal_data_operations_platform.egg-info/
+# internal_data_operations_platform.egg-info/
 
 app/db/__pycache__/
 app/models/__pycache__/
@@ -15,3 +15,5 @@ output.txt
 
 # logs
 logs/*.log
+
+command.txt

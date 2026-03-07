@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+app/__init__.py
+app/main.py
+internal_data_operations_platform.egg-info/PKG-INFO
+internal_data_operations_platform.egg-info/SOURCES.txt
+internal_data_operations_platform.egg-info/dependency_links.txt
+internal_data_operations_platform.egg-info/requires.txt
+internal_data_operations_platform.egg-info/top_level.txt
+test/test_create.py

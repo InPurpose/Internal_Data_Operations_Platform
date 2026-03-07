@@ -34,3 +34,8 @@ VALUES (
     True
 );
 -- ================================================================================================================================================
+
+
+select * 
+from orders O
+where O.user_id in (select OS.user_id from orders OS group by OS.user_id limit 1) and O.status = 'paid';

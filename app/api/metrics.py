@@ -1,47 +1,38 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import APIRouter, HTTPException, Depends
 
 from sqlalchemy import func
 
 from app.db.session import SessionLocal
-from app.core.security import get_current_user
 from app.models import *
+
+from app.core.security import get_current_user
+from app.core.redis import redis_client
 
 from datetime import datetime, timedelta
 import time
+import json
 
 
-from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
-
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
-# def get_current_user(token: str = Depends(oauth2_scheme)):
-#     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         email = payload.get("sub")
-#         if email is None:
-#             raise HTTPException(status_code=401)
-#         return email
-#     except JWTError:
-#         raise HTTPException(status_code=401)
 
 cache_store = {}
-CACHE_TTL = 30 # seconds
+CACHE_TTL = 60 # seconds
 
 router = APIRouter()
 @router.get("/metrics/gmv")
 def get_gmv(days: int = 7,status: str = "paid",current_user: str = Depends(get_current_user)):
 
-    session = SessionLocal()
-    cache_key = f"gmv:{days}:{status}"
-    now = time.time()
+    # cache_key = f"gmv:{days}:{status}"
 
-    if cache_key in cache_store:
-        data, expire_time = cache_store[cache_key]
-        if now < expire_time:
-            print("🔥 cache hit")
-            return data
+    cache_key = f"gmv:{days}"
+    cached = redis_client.get(cache_key)
+
+    # now = time.time()
+    session = SessionLocal()
+
+    if cached:
+        print(f"cache hits")
+        return json.loads(cached)
+    
     try:
         query = session.query(
             func.count(Order.id),
@@ -66,8 +57,7 @@ def get_gmv(days: int = 7,status: str = "paid",current_user: str = Depends(get_c
         "paid_order_count": paid_count,
         "paid_gmv": float(paid_gmv or 0)
     }
-
-    cache_store[cache_key] = (response, now + CACHE_TTL)
+    redis_client.set(cache_key, json.dumps(response), ex=CACHE_TTL)
 
     return response
 
@@ -109,7 +99,7 @@ def get_top_users(
         else:
             raise ValueError("Invalid order")
 
-        query = query.offset(offset).limit(limit)
+        query = query.offset(offset=offset).limit(limit)
 
         result = query.all()
     finally:
@@ -123,6 +113,9 @@ def get_top_users(
                     for item in result
                 ]
             }
+
+
+
 
 @router.get("/metrics/trend")
 def checkGMVbyDate(days:int =7):
@@ -151,7 +144,7 @@ def checkGMVbyDate(days:int =7):
         dates.append(row.date.strftime('%Y-%m-%d'))
         values.append(float(row.gmv))
     # res = [{f"{row.date.strftime('%Y-%m-%d')}":float(row.gmv)} for row in result]
-    print("====================")
+    # print("====================")
     # print(res)
     return {
         "dates":dates,
@@ -159,6 +152,64 @@ def checkGMVbyDate(days:int =7):
     }
 
 
+
+@router.get("/orders")
+def getOrder(user_id:str,start_date:datetime,end_date:datetime,status:str = 'paid',page:int = 1,page_size:int = 20):
+    session = SessionLocal()
+    try:
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id required")
+        
+        query = session.query(
+            Order.id,
+            func.date(Order.order_time).label("date"),
+            Order.status,
+            Order.snapshot_price,
+            Order.total_amount,
+            Product.name.label("product_name")
+        ).join(Product,Product.id == Order.product_id)
+        query = query.filter(Order.user_id == user_id)
+
+        VALID_STATUS = {"paid", "pending", "cancelled"}
+
+        if status in VALID_STATUS:
+            query = query.filter(Order.status == status)
+
+        if start_date:
+            query = query.filter(Order.order_time > start_date)
+        
+        if end_date:
+            query = query.filter(Order.order_time < end_date)
+
+        query = query.offset((page-1)*page_size).limit(page_size)
+        result = query.all()
+        total_order = session.query(
+            func.count(Order.id)
+        ).filter(Order.user_id==user_id).one()[0]
+
+        # print(f"total_order: {(total_order)} ================")
+        
+        
+        
+    finally:
+        session.close()
+
+    return {
+        "User_id": user_id,
+        "page": {page},
+        "page_size": {page_size},
+        "total_order": {total_order},
+        "total_page": {total_order//page_size + 1},
+        "Orders":[
+            {
+                "id":{rows.id},
+                "date": {rows.date},
+                "product":{rows.product_name},
+                "status":{rows.status},
+                "price":{rows.snapshot_price}, 
+            }
+            for rows in result]
+    } 
 
 if __name__ == "__main__":
     checkGMVbyDate(30)

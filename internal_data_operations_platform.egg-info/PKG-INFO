@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: internal-data-operations-platform
+Version: 0.1.0
+Summary: Add your description here
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: alembic>=1.18.4
+Requires-Dist: dotenv>=0.9.9
+Requires-Dist: psycopg2-binary>=2.9.11
+Requires-Dist: sqlalchemy>=2.0.46

@@ -10,9 +10,10 @@ from fastapi.templating import Jinja2Templates
 from app.core.logging_config import setup_logging
 
 import logging
-from app.core.middleware import logging_middleware
+from app.middleware.logging_middleware import logging_middleware
 
 setup_logging()
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"

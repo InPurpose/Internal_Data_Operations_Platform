@@ -7,6 +7,7 @@ class Order(Base):
 
     __table_args__ = (
         Index("idx_orders_status_time", "status", "order_time"),
+        Index("idx_orders_user_time","user_id", "order_time"),
     )
 
     id = Column(Integer, primary_key=True)

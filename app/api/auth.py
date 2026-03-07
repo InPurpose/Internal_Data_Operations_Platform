@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy import func
+
 from app.db.session import SessionLocal
-from app.models import User
+from app.models import *
 from app.core.security import verify_password, create_access_token, require_role
+
 from typing import Annotated
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -36,6 +38,8 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 
     finally:
         session.close()
+
+
 
 @router.get("/admin-only")
 def admin_route(current_user = Depends(require_role("admin"))):
