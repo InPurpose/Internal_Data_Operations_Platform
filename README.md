@@ -32,6 +32,12 @@ alembic upgarde head
 ```
 
 If you have data, you can import your data into the database. Otherwise, you may want to use our script to generate some fake data for testing:
+
+```
+uv run scripts/generate_fake_data.py
+```
+
+Now, you are ready to test out our project:
 ```
 uv run uvicorn app.main:app --reload 
 ```
