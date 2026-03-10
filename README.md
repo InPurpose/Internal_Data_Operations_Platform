@@ -5,6 +5,41 @@
 
 This project was created to practice backend engineering patterns commonly used in production systems, including authentication, authorization, logging, and automated testing.
 
+
+## How to run this project?
+
+```
+git clone https://github.com/InPurpose/Internal_Data_Operations_Platform.git
+```
+
+We provide **project.toml** and **requirement.txt** for this project. Thus, you can either use **uv** or pip to install the requirements:
+```
+uv sync
+```
+or 
+```
+pip install -r requirements.txt
+```
+
+Next, you need to manully create a new file called **.env** under root directory. And then, you need to copy all the varaibles from **.env.example** fill in the values for each of them. Or you can run this command:
+```
+mv -i ".env.example" ".env"
+``` 
+
+After that, you need to create the tables and indexes in database:
+```
+alembic upgarde head
+```
+
+If you have data, you can import your data into the database. Otherwise, you may want to use our script to generate some fake data for testing:
+```
+uv run uvicorn app.main:app --reload 
+```
+or 
+```
+uvicorn app.main:app --reload
+```
+
 ## Project Overview
 
 This project simulates a backend data operations platform built with FastAPI.
